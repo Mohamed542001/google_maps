@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:google_maps/core/constants/constants.dart';
 
 import '../../../../core/network/dio_helper.dart';
 import '../../../../core/network/end_points.dart';
@@ -8,10 +9,14 @@ class MapDataSource {
 
   MapDataSource(this.baseDioHelper);
 
-  Future getUser({required int id}) async {
+  Future getPredictionPlaces({required String input}) async {
     final Response response = await baseDioHelper.get(
-      endPoint: '${EndPoints.users}$id',
+        endPoint: EndPoints.autocomplete,
+        query: {
+          'key':AppConstants.apiKey,
+          'input':input
+        }
     );
-    return response.data;
+    return response.data['predictions'];
   }
 }

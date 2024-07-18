@@ -12,19 +12,5 @@ class FeatureBloc extends Cubit<FeatureState> {
 
   static FeatureBloc get(context) => BlocProvider.of<FeatureBloc>(context);
 
-  late User? _user;
-  User? get user => _user;
 
-  void getUser(int id) async {
-    emit(FeatureLoading());
-    NetworkService<User> data = await _featureRepository.getUser(id);
-    switch (data) {
-      case Succeed<User>(data: User userData):
-        _user = userData;
-        emit(FeatureSuccess());
-
-      case Failure<User>(networkExceptions: NetworkExceptions error):
-        emit(FeatureError(networkExceptions: error));
-    }
-  }
 }

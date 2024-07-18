@@ -3,6 +3,8 @@ import 'package:google_maps/core/src/app_export.dart';
 import 'package:google_maps/features/map_screen/cubit/map_cubit.dart';
 import 'package:google_maps/features/map_screen/presentation/screens/widgets/custom_google_maps.dart';
 import 'package:google_maps/features/map_screen/presentation/screens/widgets/map_button.dart';
+import 'package:google_maps/features/map_screen/presentation/screens/widgets/map_search_input.dart';
+import 'package:google_maps/features/map_screen/presentation/screens/widgets/search_items_view.dart';
 
 class GoogleMapScreen extends StatefulWidget {
   const GoogleMapScreen({super.key});
@@ -19,10 +21,11 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
   void initState() {
     cubit = MapCubit.get(context);
     cubit.initMarkers();
-    cubit.updateMyLocation();
-    cubit.initPolyLines();
-    cubit.initPolygons();
-    cubit.initCircles();
+    // cubit.updateCurrentLocation();
+    // cubit.updateMyLocation();
+    // cubit.initPolyLines();
+    // cubit.initPolygons();
+    // cubit.initCircles();
     super.initState();
   }
 
@@ -39,14 +42,19 @@ class _GoogleMapScreenState extends State<GoogleMapScreen> {
     return Scaffold(
       body: BlocBuilder<MapCubit,MapState>(
         builder: (context,state) {
-          return const Stack(
+          return Stack(
             children: [
-              CustomGoogleMaps(),
+              const CustomGoogleMaps(),
               Positioned(
-                bottom: 16,
+                top: 32,
                 left: 16,
                 right: 16,
-                child: MapButton(),
+                child: Column(
+                  children: [
+                    const MapSearchInput(),
+                    if(cubit.predictionPlaces.isNotEmpty)SearchItemsView(predictionPlaces: cubit.predictionPlaces,),
+                  ],
+                ),
               )
             ],
           );

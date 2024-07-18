@@ -1,3 +1,5 @@
+import 'package:google_maps/features/map_screen/data/models/prediction_place_model.dart';
+
 import '../../../../core/exceptions/network_exceptions.dart';
 import '../../../../core/network/network_service.dart';
 import '../feature_data_source/feature_data_source.dart';
@@ -8,13 +10,5 @@ class FeatureRepository {
 
   FeatureRepository(this._featureDataSource);
 
-  Future<NetworkService<User>> getUser(int id) async {
-    try {
-      return NetworkService.succeed(
-        User.fromJson(await _featureDataSource.getUser(id: id)),
-      );
-    } catch (error) {
-      return NetworkService.failure(NetworkExceptions.getDioException(error));
-    }
-  }
+
 }

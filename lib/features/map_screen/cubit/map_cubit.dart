@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:google_maps/core/utils/location_services.dart';
 import 'package:google_maps/features/map_screen/data/models/place_model.dart';
+import 'package:google_maps/features/map_screen/data/models/prediction_place_model.dart';
 import 'package:location/location.dart';
 
 import '../../../core/src/app_export.dart';
@@ -25,6 +26,7 @@ class MapCubit extends Cubit<MapState> {
   double? currentLat = 0.0;
   double? currentLng = 0.0;
   bool isFirstCall = true;
+  TextEditingController searchController = TextEditingController();
 
   List<PlaceModel> places = [
     PlaceModel(
@@ -53,16 +55,38 @@ class MapCubit extends Cubit<MapState> {
   }
 
 
-  void updateMyLocation() async{
-    await mapServices.checkAndRequestLocationServices();
-    var hasPermission = await mapServices.checkAndRequestLocationPermission();
-    if(hasPermission){
-      mapServices.getRealTimeLocationData((locationData) {
-        setCurrentLocationMarker(locationData);
-        updateMyCamera(locationData);
+  // void updateMyLocation() async{
+  //   await mapServices.checkAndRequestLocationServices();
+  //   var hasPermission = await mapServices.checkAndRequestLocationPermission();
+  //   if(hasPermission){
+  //     mapServices.getRealTimeLocationData((locationData) {
+  //       setCurrentLocationMarker(locationData);
+  //       updateMyCamera(locationData);
+  //
+  //     });
+  //   }
+  // }
 
-      });
+
+  void updateCurrentLocation()async{
+    try {
+      var locationData = await mapServices.getLocation();
+      var currentPosition = LatLng(locationData.latitude!, locationData.longitude!);
+      CameraPosition currentLocation = CameraPosition(target: LatLng(locationData.latitude!,locationData.longitude!),zoom: 16);
+      Marker currentMarker = Marker(markerId: const MarkerId('currentMarker'),position: currentPosition);
+      markers.add(currentMarker);
+      googleMapController?.animateCamera(CameraUpdate.newCameraPosition(currentLocation),);
+      emit(UpdateCurrentLocationSuccess());
+    } on LocationServiceException catch (e) {
+      // TODO
     }
+    on LocationPermissionException catch (e) {
+      // TODO
+    }
+    catch (e){
+      // TODO
+    }
+
   }
 
 
@@ -137,10 +161,10 @@ class MapCubit extends Cubit<MapState> {
       zIndex: 1,
       startCap: Cap.roundCap,
       color: Colors.white,
-      points: [
-        const LatLng(31.28180815947351, 31.67713459187959),
-        const LatLng(31.281529, 31.677191),
-        const LatLng(31.28145904461904, 31.676276740873252),
+      points: const [
+        LatLng(31.28180815947351, 31.67713459187959),
+        LatLng(31.281529, 31.677191),
+        LatLng(31.28145904461904, 31.676276740873252),
       ],
     );
     Polyline polyline2 = Polyline(
@@ -150,12 +174,12 @@ class MapCubit extends Cubit<MapState> {
       },
       width: 5,
       zIndex: 0,
-      patterns: [PatternItem.dot],
+      patterns: const [PatternItem.dot],
       startCap: Cap.roundCap,
       color: Colors.red,
-      points: [
-        const LatLng(31.281174331696736, 31.676710122811418),
-        const LatLng(31.28220228995134, 31.676138115966754),
+      points: const [
+        LatLng(31.281174331696736, 31.676710122811418),
+        LatLng(31.28220228995134, 31.676138115966754),
       ],
     );
     polyLines.add(polyline);
@@ -168,17 +192,17 @@ class MapCubit extends Cubit<MapState> {
         fillColor: Colors.black.withOpacity(0.5),
         strokeColor: Colors.black.withOpacity(0.5),
         strokeWidth: 1,
-        holes: [
+        holes: const [
           [
-            const LatLng(31.28162663471417, 31.67705225773795),
-            const LatLng(31.28174998970471, 31.677036220162865),
-            const LatLng(31.281667753062287, 31.67681169411169),
+            LatLng(31.28162663471417, 31.67705225773795),
+            LatLng(31.28174998970471, 31.677036220162865),
+            LatLng(31.281667753062287, 31.67681169411169),
           ],
         ],
-        points: [
-          const LatLng(31.28180815947351, 31.67713459187959),
-          const LatLng(31.281529, 31.677191),
-          const LatLng(31.28145904461904, 31.676276740873252),
+        points: const [
+          LatLng(31.28180815947351, 31.67713459187959),
+          LatLng(31.281529, 31.677191),
+          LatLng(31.28145904461904, 31.676276740873252),
           // LatLng(31.28180815947351, 31.67713459187959),
         ]);
     polygons.add(polygon);
@@ -192,6 +216,25 @@ class MapCubit extends Cubit<MapState> {
         fillColor: Colors.white
     );
     circles.add(circle);
+  }
+
+
+  List<PredictionPlaceModel> predictionPlaces = [];
+
+  Future<void> getPredictionPlaces({required String input}) async {
+    try {
+      final NetworkService<List<PredictionPlaceModel>> data = await _featureRepository.getPredictionPlaces(input: input);
+      if (data is Succeed<List<PredictionPlaceModel>>) {
+        predictionPlaces.clear();
+        predictionPlaces.addAll(data.data);
+        print('predictionPlaces ${predictionPlaces.length}');
+        emit(PredictionPlacesSuccess());
+      } else if (data is Failure<List<PredictionPlaceModel>>) {
+        emit(PredictionPlacesError(networkExceptions: data.networkExceptions));
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
 }

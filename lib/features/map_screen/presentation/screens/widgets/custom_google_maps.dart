@@ -13,13 +13,14 @@ class CustomGoogleMaps extends StatelessWidget {
         onMapCreated: (controller) {
           cubit.googleMapController = controller;
           cubit.initMapStyle(context);
+          cubit.updateCurrentLocation();
 
         },
         zoomControlsEnabled: false,
         initialCameraPosition: const CameraPosition(
           target: LatLng(
-            31.281619,
-            31.677023,
+            0.0,
+            0.0 ,
           ),
           /* zoom levels */
           // world view ======> 0   to  3
@@ -44,12 +45,12 @@ class CustomGoogleMaps extends StatelessWidget {
         markers: cubit.markers,
 
         /*polylines(اكتر من خط متوصلين ببعض)*/
-        polylines: cubit.polyLines,
+        // polylines: cubit.polyLines,
 
         /*polylines(شكل مجسم يكون نقطه البدايه هي نقطة النهاية*/
-        polygons: cubit.polygons,
+        // polygons: cubit.polygons,
 
-        circles: cubit.circles,
+        // circles: cubit.circles,
       );
       },
     );
