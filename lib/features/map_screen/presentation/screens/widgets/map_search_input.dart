@@ -1,6 +1,5 @@
 import 'package:google_maps/core/constants/custom_input_field.dart';
 import 'package:google_maps/core/src/app_export.dart';
-import 'package:google_maps/core/utils/google_maps_places_services.dart';
 import 'package:google_maps/features/map_screen/cubit/map_cubit.dart';
 
 class MapSearchInput extends StatelessWidget {

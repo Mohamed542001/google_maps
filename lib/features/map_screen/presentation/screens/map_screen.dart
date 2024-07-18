@@ -1,8 +1,6 @@
-
 import 'package:google_maps/core/src/app_export.dart';
 import 'package:google_maps/features/map_screen/cubit/map_cubit.dart';
 import 'package:google_maps/features/map_screen/presentation/screens/widgets/custom_google_maps.dart';
-import 'package:google_maps/features/map_screen/presentation/screens/widgets/map_button.dart';
 import 'package:google_maps/features/map_screen/presentation/screens/widgets/map_search_input.dart';
 import 'package:google_maps/features/map_screen/presentation/screens/widgets/search_items_view.dart';
 
